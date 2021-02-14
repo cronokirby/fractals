@@ -1,11 +1,9 @@
+import Canvas from './Canvas';
+
 function App() {
   return (
     <div>
-      <header>
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-      </header>
+      <Canvas width={640} height={480} />
     </div>
   );
 }
