@@ -33,11 +33,13 @@ const fragmentShader = `
     for (float j = 0.; j < N; j++) {
       i = j;
       z = vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y) + c;
-      if (dot(z, z) > B * B) {
-        break;
+      vec2 to_p = z - vec2(4.0, 4.0);
+      float d = dot(z, z);
+      if (d < 0.2) {
+        return d / 0.2;
       }
     }
-    return i + 1.0 - log(log(dot(z, z)) / log(B)) / log(2.0);
+    return 0.0;
   }
 
   void main() {
@@ -48,13 +50,11 @@ const fragmentShader = `
     vec3 color = vec3(0);
     float ratio = uResolution.x / uResolution.y;
 
-    float adjustedN = N * uZoom;
     for (float i = 0.0; i < SS; i++) {
       vec2 uv = uCenter + (((gl_FragCoord.xy + random2()) / uResolution.y) - vec2(0.5 * ratio, 0.5)) / uZoom;
-      float n = iterate(uv) / N;
+      float n = iterate(uv);
 
-      color += palette(n + 0.5, a, b, c, uColorD);
-      //color += vec3(uv.x, uv.y, 0.0);
+      color += vec3(n, n, n);
     }
 
 	  gl_FragColor = vec4(color / SS, 1.0);
