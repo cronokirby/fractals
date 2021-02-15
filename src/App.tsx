@@ -3,7 +3,7 @@ import Scene from './Scene';
 
 function App() {
   const [scene, setScene] = React.useState({
-    width: 900,
+    width: 800,
     height: 800,
     zoom: 1.0,
     center: { x: 0.0, y: 0.0 },
@@ -28,8 +28,11 @@ function App() {
 
   const onClick = (x: number, y: number) => {
     const center = scene.center;
-    center.x += x / scene.width - 0.5;
-    center.y += y / scene.height - 0.5;
+    console.log(x / scene.width - 0.5, y / scene.height - 0.5);
+    const adjustX = x / scene.width - 0.5;
+    const adjustY = 0.5 - y / scene.height;
+    center.x += adjustX;
+    center.y += adjustY;
     setScene({...scene, center});
   }
 
