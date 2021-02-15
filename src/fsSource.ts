@@ -8,6 +8,10 @@ const fragmentShader = `
   #define N 64.
   #define B 4.
 
+  vec3 palette(in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d) {
+    return a + b * cos(6.28318 * (c * t + d));
+  }
+
   float iterate(vec2 p) {
     vec2 z = vec2(0);
     vec2 c = p;
@@ -29,7 +33,12 @@ const fragmentShader = `
     if (n == 1.) {
       n = 0.;
     }
-	  gl_FragColor = vec4(vec3(n), 1.0);
+    vec3 a = vec3(0.5);
+    vec3 b = vec3(0.5);
+    vec3 c = vec3(1.0);
+    vec3 d = vec3(0.0, 0.1, 0.2);
+    vec3 color = palette(n + 0.5, a, b, c, d);
+	  gl_FragColor = vec4(color, 1.0);
   }
 `
 export default fragmentShader;
