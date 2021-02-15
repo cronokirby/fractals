@@ -9,6 +9,7 @@ export interface SceneInfo {
   center: { x: number, y: number };
   colorD: { r: number, g: number, b: number };
   colorC: number;
+  juliaC: { x: number, y: number };
 }
 
 interface Buffers {
@@ -83,6 +84,7 @@ interface UniformLocations {
   uColorD: WebGLUniformLocation;
   uColorC: WebGLUniformLocation;
   uCenter: WebGLUniformLocation;
+  uJuliaC: WebGLUniformLocation;
   uZoom: WebGLUniformLocation;
 }
 
@@ -109,6 +111,7 @@ class GLContext {
         uColorD: gl.getUniformLocation(shaderProgram, 'uColorD'),
         uColorC: gl.getUniformLocation(shaderProgram, 'uColorC'),
         uCenter: gl.getUniformLocation(shaderProgram, 'uCenter'),
+        uJuliaC: gl.getUniformLocation(shaderProgram, 'uJuliaC'),
         uZoom: gl.getUniformLocation(shaderProgram, 'uZoom')
       }
     } as ProgramInfo;
@@ -152,6 +155,7 @@ class GLContext {
     this.gl.uniform3fv(this.programInfo.uniformLocations.uColorD, [scene.colorD.r, scene.colorD.g, scene.colorD.b]);
     this.gl.uniform1f(this.programInfo.uniformLocations.uColorC, scene.colorC);
     this.gl.uniform2fv(this.programInfo.uniformLocations.uCenter, [scene.center.x, scene.center.y]);
+    this.gl.uniform2fv(this.programInfo.uniformLocations.uJuliaC, [scene.juliaC.x, scene.juliaC.y]);
     this.gl.uniform1f(this.programInfo.uniformLocations.uZoom, scene.zoom);
 
     // Draw everything
@@ -203,7 +207,7 @@ export default function Scene({ scene, onDrag, onScroll }: Props) {
       return;
     }
     onDrag(event.clientX - dragStart.x, event.clientY - dragStart.y);
-    setDragStart({x: event.clientX, y: event.clientY});
+    setDragStart({ x: event.clientX, y: event.clientY });
   };
   const onMouseUp = (event: React.MouseEvent) => {
     setDragStart(null);
@@ -217,5 +221,5 @@ export default function Scene({ scene, onDrag, onScroll }: Props) {
     onMouseMove={e => onMouseMove(e)}
     onMouseDown={e => onMouseDown(e)}
     onMouseUp={e => onMouseUp(e)}
-    onWheel={e => onWheel(e)}/>
+    onWheel={e => onWheel(e)} />
 }

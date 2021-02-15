@@ -14,7 +14,11 @@ function App() {
       g: 0.2,
       b: 0.3
     },
-    colorC: 4.0
+    colorC: 4.0,
+    juliaC: {
+      x: 0.35,
+      y: -0.02
+    }
   })
   const onChangeR = (event: any) => {
     setScene({ ...scene, colorD: { ...scene.colorD, r: Number(event.target.value) } })
@@ -27,6 +31,12 @@ function App() {
   };
   const onChangeC = (event: any) => {
     setScene({ ...scene, colorC: Number(event.target.value) })
+  };
+  const onChangeJuliaCx = (event: any) => {
+    setScene({ ...scene, juliaC: {...scene.juliaC, x: Number(event.target.value) }})
+  };
+  const onChangeJuliaCy = (event: any) => {
+    setScene({ ...scene, juliaC: {...scene.juliaC, y: Number(event.target.value) }})
   };
   const onChangeZoom = (event: any) => {
     setScene({ ...scene, zoom: BASE ** Number(event.target.value) })
@@ -95,6 +105,17 @@ function App() {
           <div className="flex items-center space-x-2">
             <span>Zoom</span>
             <input type="range" min="-4.0" max="20.0" step="1" value={Math.log(scene.zoom) / Math.log(BASE)} onChange={onChangeZoom} />
+          </div>
+        </div>
+        <div className="bg-gray-900 bg-opacity-50 p-2 rounded">
+          <h2>Julia Parameters</h2>
+          <div className="flex items-center space-x-2">
+            <span>X</span>
+            <input type="range" min="-1.0" max="1.0" step="0.01" value={scene.juliaC.x} onChange={onChangeJuliaCx} />
+          </div>
+          <div className="flex items-center space-x-2">
+            <span>Y</span>
+            <input type="range" min="-1.0" max="1" step="0.01" value={scene.juliaC.y} onChange={onChangeJuliaCy} />
           </div>
         </div>
       </div>

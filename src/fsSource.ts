@@ -8,6 +8,7 @@ const fragmentShader = `
   uniform vec3 uColorD;
   uniform float uColorC;
   uniform float uZoom;
+  uniform vec2 uJuliaC;
 
   #define N 64.
   #define B 4.
@@ -61,7 +62,7 @@ const fragmentShader = `
 
   float iterate(vec2 p) {
     vec2 z = p;
-    vec2 c = vec2(0.28, -0.02);
+    vec2 c = uJuliaC;
     float i;
     for (float j = 0.; j < N; j++) {
       i = j;
@@ -76,7 +77,7 @@ const fragmentShader = `
 
   float iterate2(vec2 p) {
     vec2 z = p;
-    vec2 c = vec2(0.45, 0.24);
+    vec2 c = uJuliaC;
     float i;
     for (float j = 0.; j < N; j++) {
       i = j;
