@@ -67,18 +67,27 @@ function App() {
 
   return (
     <div>
-      <div className="absolute">
-        <div>
-          <input type="range" min="0" max="1" step="0.01" value={scene.colorD.r} onChange={onChangeR} />
+      <div className="absolute font-mono text-white font-bold text-lg m-2 space-y-2">
+        <div className="bg-gray-900 bg-opacity-50 p-2 rounded">
+          <h2>Colors</h2>
+          <div className="flex items-center space-x-2">
+            <span>D1</span>
+            <input type="range" min="0" max="1" step="0.01" value={scene.colorD.r} onChange={onChangeR} />
+          </div>
+          <div className="flex items-center space-x-2">
+            <span>D2</span>
+            <input type="range" min="0" max="1" step="0.01" value={scene.colorD.g} onChange={onChangeG} />
+          </div>
+          <div className="flex items-center space-x-2">
+            <span>D3</span>
+            <input type="range" min="0" max="1" step="0.01" value={scene.colorD.b} onChange={onChangeB} />
+          </div>
         </div>
-        <div>
-          <input type="range" min="0" max="1" step="0.01" value={scene.colorD.g} onChange={onChangeG} />
-        </div>
-        <div>
-          <input type="range" min="0" max="1" step="0.01" value={scene.colorD.b} onChange={onChangeB} />
-        </div>
-        <div>
-          <input type="range" min="-4.0" max="20.0" step="1" value={Math.log(scene.zoom) / Math.log(BASE)} onChange={onChangeZoom} />
+        <div className="bg-gray-900 bg-opacity-50 p-2 rounded">
+          <div className="flex items-center space-x-2">
+            <span>Zoom</span>
+            <input type="range" min="-4.0" max="20.0" step="1" value={Math.log(scene.zoom) / Math.log(BASE)} onChange={onChangeZoom} />
+          </div>
         </div>
       </div>
       <div className="h-screen w-full" ref={ref}>
