@@ -4,7 +4,9 @@ const fragmentShader = `
   #endif
 
   uniform vec2 uResolution;
+  uniform vec2 uCenter;
   uniform vec3 uColorD;
+  uniform float uZoom;
 
   #define N 64.
   #define B 4.
@@ -39,14 +41,16 @@ const fragmentShader = `
   }
 
   void main() {
-
     vec3 a = vec3(0.5);
     vec3 b = vec3(0.6);
     vec3 c = vec3(3.0);
 
     vec3 color = vec3(0);
+    float ratio = uResolution.x / uResolution.y;
+
+    float adjustedN = N * uZoom;
     for (float i = 0.0; i < SS; i++) {
-      vec2 uv = (2.5 * gl_FragCoord.xy + random2() - uResolution) / uResolution.y - vec2(1.0, 0.25);
+      vec2 uv = uCenter + 3.5 / uZoom * ((gl_FragCoord.xy + random2()) / uResolution.y - vec2(0.5 * ratio, 0.5));
       float n = iterate(uv) / N;
 
       color += palette(n + 0.5, a, b, c, uColorD);

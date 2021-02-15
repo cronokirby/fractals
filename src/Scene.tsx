@@ -5,6 +5,7 @@ import fsSource from './fsSource';
 export interface SceneInfo {
   width: number;
   height: number;
+  zoom: number;
   colorD: { r: number, g: number, b: number };
 }
 
@@ -78,6 +79,8 @@ interface AttribLocations {
 interface UniformLocations {
   uResolution: WebGLUniformLocation;
   uColorD: WebGLUniformLocation;
+  uCenter: WebGLUniformLocation;
+  uZoom: WebGLUniformLocation;
 }
 
 interface ProgramInfo {
@@ -100,7 +103,9 @@ class GLContext {
       },
       uniformLocations: {
         uResolution: gl.getUniformLocation(shaderProgram, 'uResolution'),
-        uColorD: gl.getUniformLocation(shaderProgram, 'uColorD')
+        uColorD: gl.getUniformLocation(shaderProgram, 'uColorD'),
+        uCenter: gl.getUniformLocation(shaderProgram, 'uCenter'),
+        uZoom: gl.getUniformLocation(shaderProgram, 'uZoom')
       }
     } as ProgramInfo;
     const buffers = initBuffers(gl);
@@ -141,6 +146,8 @@ class GLContext {
     // Set the shader uniforms
     this.gl.uniform2fv(this.programInfo.uniformLocations.uResolution, [scene.width, scene.height])
     this.gl.uniform3fv(this.programInfo.uniformLocations.uColorD, [scene.colorD.r, scene.colorD.g, scene.colorD.b]);
+    this.gl.uniform2fv(this.programInfo.uniformLocations.uCenter, [0.0, 0.0]);
+    this.gl.uniform1f(this.programInfo.uniformLocations.uZoom, scene.zoom);
 
     // Draw everything
     {
