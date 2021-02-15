@@ -5,6 +5,7 @@ import fsSource from './fsSource';
 export interface SceneInfo {
   width: number;
   height: number;
+  colorD: { r: number, g: number, b: number };
 }
 
 interface Buffers {
@@ -139,7 +140,7 @@ class GLContext {
 
     // Set the shader uniforms
     this.gl.uniform2fv(this.programInfo.uniformLocations.uResolution, [scene.width, scene.height])
-    this.gl.uniform3fv(this.programInfo.uniformLocations.uColorD, [0.1, 0.2, 0.3]);
+    this.gl.uniform3fv(this.programInfo.uniformLocations.uColorD, [scene.colorD.r, scene.colorD.g, scene.colorD.b]);
 
     // Draw everything
     {
@@ -151,23 +152,29 @@ class GLContext {
 }
 
 
-function initCanvas(canvas: HTMLCanvasElement, scene: SceneInfo) {
+function initCtx(canvas: HTMLCanvasElement): GLContext | null {
   const gl = canvas.getContext("webgl");
   if (!gl) {
     alert("Unable to initialize WebGL. Your browser or machine may not support it.");
-    return;
+    return null;
   }
 
-  const ctx = GLContext.init(gl);
-  ctx.draw(scene);
+  return GLContext.init(gl);
 }
 
 export default function Scene(scene: SceneInfo) {
   const ref = React.useRef<HTMLCanvasElement | null>(null);
+  const [ctx, setCtx] = React.useState<GLContext | null>(null);
   React.useEffect(() => {
     if (ref.current !== null) {
-      initCanvas(ref.current, scene);
+      const ctx = initCtx(ref.current);
+      setCtx(() => ctx);
     }
   }, [ref]);
+  React.useEffect(() => {
+    if (ctx) {
+      ctx.draw(scene);
+    }
+  }, [ctx, scene])
   return <canvas width={scene.width} height={scene.height} ref={ref}></canvas>
 }
