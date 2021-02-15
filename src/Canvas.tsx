@@ -2,7 +2,11 @@ import React from 'react';
 import vsSource from './vsSource';
 import fsSource from './fsSource';
 
-function loadShader(gl: WebGLRenderingContext, type: number, source: string) {
+interface Buffers {
+  position: WebGLBuffer;
+}
+
+function loadShader(gl: WebGLRenderingContext, type: number, source: string): WebGLShader {
   const shader = gl.createShader(type);
   if (!shader) {
     throw new Error("shader is null");
@@ -20,7 +24,7 @@ function loadShader(gl: WebGLRenderingContext, type: number, source: string) {
   return shader;
 }
 
-function initShaderProgram(gl: WebGLRenderingContext) {
+function initShaderProgram(gl: WebGLRenderingContext): WebGLProgram {
   const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
   const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
 
@@ -61,49 +65,87 @@ function initBuffers(gl: WebGLRenderingContext) {
   }
 }
 
-function drawScene(gl: WebGLRenderingContext, width: number, height: number, programInfo: any, buffers: { position: WebGLBuffer }) {
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
-  gl.clearDepth(1.0);                 // Clear everything
+interface AttribLocations {
+  vertexPosition: number;
+}
 
-  // Clear the canvas before we start drawing on it.
+interface UniformLocations {
+  uResolution: WebGLUniformLocation;
+}
 
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+interface ProgramInfo {
+  program: WebGLProgram;
+  attribLocations: AttribLocations;
+  uniformLocations: UniformLocations;
+}
 
-  // Tell WebGL how to pull out the positions from the position
-  // buffer into the vertexPosition attribute.
-  {
-    const numComponents = 2;  // pull out 2 values per iteration
-    const type = gl.FLOAT;    // the data in the buffer is 32bit floats
-    const normalize = false;  // don't normalize
-    const stride = 0;         // how many bytes to get from one set of values to the next
-    // 0 = use type and numComponents above
-    const offset = 0;         // how many bytes inside the buffer to start from
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
-    gl.vertexAttribPointer(
-      programInfo.attribLocations.vertexPosition,
-      numComponents,
-      type,
-      normalize,
-      stride,
-      offset);
-    gl.enableVertexAttribArray(
-      programInfo.attribLocations.vertexPosition);
+interface Scene {
+  width: number;
+  height: number;
+}
+
+class GLContext {
+  private constructor(private gl: WebGLRenderingContext, private programInfo: ProgramInfo, private buffers: Buffers) {
   }
 
-  // Tell WebGL to use our program when drawing
-  gl.useProgram(programInfo.program);
+  static init(gl: WebGLRenderingContext): GLContext {
+    const shaderProgram = initShaderProgram(gl);
+    const programInfo = {
+      program: shaderProgram,
+      attribLocations: {
+        vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+      },
+      uniformLocations: {
+        uResolution: gl.getUniformLocation(shaderProgram, 'uResolution')
+      }
+    } as ProgramInfo;
+    const buffers = initBuffers(gl);
+    return new GLContext(gl, programInfo, buffers);
+  }
 
-  // Set the shader uniforms
-  console.log(programInfo);
-  gl.uniform2fv(programInfo.uniformLocations.uResolution, [width, height])
+  draw(scene: Scene) {
+    this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    this.gl.clearDepth(1.0);
 
-  // Draw everything
-  {
-    const offset = 0;
-    const vertexCount = 4;
-    gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
+    // Clear the canvas before we start drawing on it.
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+
+    // Tell WebGL how to pull out the positions from the position
+    // buffer into the vertexPosition attribute.
+    {
+      const numComponents = 2;  // pull out 2 values per iteration
+      const type = this.gl.FLOAT;    // the data in the buffer is 32bit floats
+      const normalize = false;  // don't normalize
+      const stride = 0;         // how many bytes to get from one set of values to the next
+      // 0 = use type and numComponents above
+      const offset = 0;         // how many bytes inside the buffer to start from
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position);
+      this.gl.vertexAttribPointer(
+        this.programInfo.attribLocations.vertexPosition,
+        numComponents,
+        type,
+        normalize,
+        stride,
+        offset);
+      this.gl.enableVertexAttribArray(
+        this.programInfo.attribLocations.vertexPosition);
+    }
+
+    // Tell WebGL to use our program when drawing
+    this.gl.useProgram(this.programInfo.program);
+
+    // Set the shader uniforms
+    this.gl.uniform2fv(this.programInfo.uniformLocations.uResolution, [scene.width, scene.height])
+
+    // Draw everything
+    {
+      const offset = 0;
+      const vertexCount = 4;
+      this.gl.drawArrays(this.gl.TRIANGLE_STRIP, offset, vertexCount);
+    }
   }
 }
+
 
 function initCanvas(canvas: HTMLCanvasElement, width: number, height: number) {
   const gl = canvas.getContext("webgl");
@@ -111,22 +153,9 @@ function initCanvas(canvas: HTMLCanvasElement, width: number, height: number) {
     alert("Unable to initialize WebGL. Your browser or machine may not support it.");
     return;
   }
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);
-  // Clear the color buffer with specified clear color
-  gl.clear(gl.COLOR_BUFFER_BIT);
 
-  const shaderProgram = initShaderProgram(gl);
-  const programInfo = {
-    program: shaderProgram,
-    attribLocations: {
-      vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
-    },
-    uniformLocations: {
-      uResolution: gl.getUniformLocation(shaderProgram, 'uResolution')
-    }
-  }
-  const buffers = initBuffers(gl);
-  drawScene(gl, width, height, programInfo, buffers);
+  const ctx = GLContext.init(gl);
+  ctx.draw({ width, height });
 }
 
 interface CanvasProps {
