@@ -173,9 +173,10 @@ function initCtx(canvas: HTMLCanvasElement): GLContext | null {
 interface Props {
   scene: SceneInfo;
   onDrag(dx: number, dy: number): void;
+  onScroll(forward: boolean): void;
 }
 
-export default function Scene({ scene, onDrag }: Props) {
+export default function Scene({ scene, onDrag, onScroll }: Props) {
   const ref = React.useRef<HTMLCanvasElement | null>(null);
   const [ctx, setCtx] = React.useState<GLContext | null>(null);
   const [dragStart, setDragStart] = React.useState(null as null | { x: number, y: number });
@@ -203,10 +204,14 @@ export default function Scene({ scene, onDrag }: Props) {
   const onMouseUp = (event: React.MouseEvent) => {
     setDragStart(null);
   };
+  const onWheel = (event: React.WheelEvent) => {
+    onScroll(event.deltaY < 0);
+  };
   return <canvas
     width={scene.width}
     height={scene.height} ref={ref}
     onMouseMove={e => onMouseMove(e)}
     onMouseDown={e => onMouseDown(e)}
-    onMouseUp={e => onMouseUp(e)} />
+    onMouseUp={e => onMouseUp(e)}
+    onWheel={e => onWheel(e)}/>
 }

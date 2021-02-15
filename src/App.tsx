@@ -37,6 +37,12 @@ function App() {
     setScene({ ...scene, center });
   }
 
+  const onScroll = (forward: boolean) => {
+    console.log(forward);
+    const adjust = forward ? BASE : 1 / BASE;
+    setScene({ ...scene, zoom: scene.zoom * adjust })
+  }
+
   return (
     <div>
       <div>
@@ -51,7 +57,7 @@ function App() {
       <div>
         <input type="range" min="-4.0" max="20.0" step="1" value={Math.log(scene.zoom) / Math.log(BASE)} onChange={onChangeZoom} />
       </div>
-      <Scene scene={scene} onDrag={(dx, dy) => onDrag(dx, dy)} />
+      <Scene scene={scene} onDrag={(dx, dy) => onDrag(dx, dy)} onScroll={forward => onScroll(forward)}/>
     </div>
   );
 }
