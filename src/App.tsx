@@ -1,9 +1,9 @@
-import Canvas from './Canvas';
+import Scene from './Scene';
 
 function App() {
   return (
     <div>
-      <Canvas width={800} height={800} />
+      <Scene width={800} height={800} />
     </div>
   );
 }

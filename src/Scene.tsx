@@ -2,6 +2,11 @@ import React from 'react';
 import vsSource from './vsSource';
 import fsSource from './fsSource';
 
+export interface SceneInfo {
+  width: number;
+  height: number;
+}
+
 interface Buffers {
   position: WebGLBuffer;
 }
@@ -80,10 +85,6 @@ interface ProgramInfo {
   uniformLocations: UniformLocations;
 }
 
-interface Scene {
-  width: number;
-  height: number;
-}
 
 class GLContext {
   private constructor(private gl: WebGLRenderingContext, private programInfo: ProgramInfo, private buffers: Buffers) {
@@ -105,7 +106,7 @@ class GLContext {
     return new GLContext(gl, programInfo, buffers);
   }
 
-  draw(scene: Scene) {
+  draw(scene: SceneInfo) {
     this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
     this.gl.clearDepth(1.0);
 
@@ -150,7 +151,7 @@ class GLContext {
 }
 
 
-function initCanvas(canvas: HTMLCanvasElement, width: number, height: number) {
+function initCanvas(canvas: HTMLCanvasElement, scene: SceneInfo) {
   const gl = canvas.getContext("webgl");
   if (!gl) {
     alert("Unable to initialize WebGL. Your browser or machine may not support it.");
@@ -158,20 +159,15 @@ function initCanvas(canvas: HTMLCanvasElement, width: number, height: number) {
   }
 
   const ctx = GLContext.init(gl);
-  ctx.draw({ width, height });
+  ctx.draw(scene);
 }
 
-interface CanvasProps {
-  width: number;
-  height: number;
-}
-
-export default function Canvas({ width, height }: CanvasProps) {
+export default function Scene(scene: SceneInfo) {
   const ref = React.useRef<HTMLCanvasElement | null>(null);
   React.useEffect(() => {
     if (ref.current !== null) {
-      initCanvas(ref.current, width, height);
+      initCanvas(ref.current, scene);
     }
   }, [ref]);
-  return <canvas width={width} height={height} ref={ref}></canvas>
+  return <canvas width={scene.width} height={scene.height} ref={ref}></canvas>
 }
