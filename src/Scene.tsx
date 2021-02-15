@@ -6,6 +6,7 @@ export interface SceneInfo {
   width: number;
   height: number;
   zoom: number;
+  center: { x: number, y: number };
   colorD: { r: number, g: number, b: number };
 }
 
@@ -146,7 +147,7 @@ class GLContext {
     // Set the shader uniforms
     this.gl.uniform2fv(this.programInfo.uniformLocations.uResolution, [scene.width, scene.height])
     this.gl.uniform3fv(this.programInfo.uniformLocations.uColorD, [scene.colorD.r, scene.colorD.g, scene.colorD.b]);
-    this.gl.uniform2fv(this.programInfo.uniformLocations.uCenter, [0.0, 0.0]);
+    this.gl.uniform2fv(this.programInfo.uniformLocations.uCenter, [scene.center.x, scene.center.y]);
     this.gl.uniform1f(this.programInfo.uniformLocations.uZoom, scene.zoom);
 
     // Draw everything
@@ -169,7 +170,12 @@ function initCtx(canvas: HTMLCanvasElement): GLContext | null {
   return GLContext.init(gl);
 }
 
-export default function Scene(scene: SceneInfo) {
+interface Props {
+  scene: SceneInfo;
+  onClick(x: number, y: number): void;
+}
+
+export default function Scene({ scene, onClick }: Props) {
   const ref = React.useRef<HTMLCanvasElement | null>(null);
   const [ctx, setCtx] = React.useState<GLContext | null>(null);
   React.useEffect(() => {
@@ -183,5 +189,14 @@ export default function Scene(scene: SceneInfo) {
       ctx.draw(scene);
     }
   }, [ctx, scene])
-  return <canvas width={scene.width} height={scene.height} ref={ref}></canvas>
+  const onClickEvent = (event: React.MouseEvent) => {
+    if (!ref.current) {
+      return;
+    }
+    const rect = ref.current.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    onClick(x, y);
+  }
+  return <canvas width={scene.width} height={scene.height} ref={ref} onClick={onClickEvent}></canvas>
 }
