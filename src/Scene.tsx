@@ -8,6 +8,7 @@ export interface SceneInfo {
   zoom: number;
   center: { x: number, y: number };
   colorD: { r: number, g: number, b: number };
+  colorC: number;
 }
 
 interface Buffers {
@@ -80,6 +81,7 @@ interface AttribLocations {
 interface UniformLocations {
   uResolution: WebGLUniformLocation;
   uColorD: WebGLUniformLocation;
+  uColorC: WebGLUniformLocation;
   uCenter: WebGLUniformLocation;
   uZoom: WebGLUniformLocation;
 }
@@ -105,6 +107,7 @@ class GLContext {
       uniformLocations: {
         uResolution: gl.getUniformLocation(shaderProgram, 'uResolution'),
         uColorD: gl.getUniformLocation(shaderProgram, 'uColorD'),
+        uColorC: gl.getUniformLocation(shaderProgram, 'uColorC'),
         uCenter: gl.getUniformLocation(shaderProgram, 'uCenter'),
         uZoom: gl.getUniformLocation(shaderProgram, 'uZoom')
       }
@@ -147,6 +150,7 @@ class GLContext {
     // Set the shader uniforms
     this.gl.uniform2fv(this.programInfo.uniformLocations.uResolution, [scene.width, scene.height])
     this.gl.uniform3fv(this.programInfo.uniformLocations.uColorD, [scene.colorD.r, scene.colorD.g, scene.colorD.b]);
+    this.gl.uniform1f(this.programInfo.uniformLocations.uColorC, scene.colorC);
     this.gl.uniform2fv(this.programInfo.uniformLocations.uCenter, [scene.center.x, scene.center.y]);
     this.gl.uniform1f(this.programInfo.uniformLocations.uZoom, scene.zoom);
 

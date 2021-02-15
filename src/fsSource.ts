@@ -6,6 +6,7 @@ const fragmentShader = `
   uniform vec2 uResolution;
   uniform vec2 uCenter;
   uniform vec3 uColorD;
+  uniform float uColorC;
   uniform float uZoom;
 
   #define N 64.
@@ -91,7 +92,7 @@ const fragmentShader = `
   void main() {
     vec3 a = vec3(0.5);
     vec3 b = vec3(0.6);
-    vec3 c = vec3(4.0);
+    vec3 c = vec3(uColorC);
 
     vec3 color = vec3(0);
     float ratio = uResolution.x / uResolution.y;

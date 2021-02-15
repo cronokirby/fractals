@@ -13,7 +13,8 @@ function App() {
       r: 0.1,
       g: 0.2,
       b: 0.3
-    }
+    },
+    colorC: 4.0
   })
   const onChangeR = (event: any) => {
     setScene({ ...scene, colorD: { ...scene.colorD, r: Number(event.target.value) } })
@@ -23,6 +24,9 @@ function App() {
   };
   const onChangeB = (event: any) => {
     setScene({ ...scene, colorD: { ...scene.colorD, b: Number(event.target.value) } })
+  };
+  const onChangeC = (event: any) => {
+    setScene({ ...scene, colorC: Number(event.target.value) })
   };
   const onChangeZoom = (event: any) => {
     setScene({ ...scene, zoom: BASE ** Number(event.target.value) })
@@ -81,6 +85,10 @@ function App() {
           <div className="flex items-center space-x-2">
             <span>D3</span>
             <input type="range" min="0" max="1" step="0.01" value={scene.colorD.b} onChange={onChangeB} />
+          </div>
+          <div className="flex items-center space-x-2">
+            <span>C</span>
+            <input type="range" min="0.0" max="8.0" step="0.01" value={scene.colorC} onChange={onChangeC} />
           </div>
         </div>
         <div className="bg-gray-900 bg-opacity-50 p-2 rounded">
