@@ -5,8 +5,8 @@ const BASE = 1.5;
 
 function App() {
   const [scene, setScene] = React.useState({
-    width: 1200,
-    height: 800,
+    width: 1920,
+    height: 1080,
     zoom: 1.0,
     center: { x: 0.0, y: 0.0 },
     colorD: {
@@ -38,26 +38,52 @@ function App() {
   }
 
   const onScroll = (forward: boolean) => {
-    console.log(forward);
     const adjust = forward ? BASE : 1 / BASE;
     setScene({ ...scene, zoom: scene.zoom * adjust })
   }
 
+  const ref = React.useRef(null as HTMLDivElement | null);
+
+  const resize = () => {
+    if (!ref.current) {
+      return;
+    }
+    const width = ref.current.clientWidth;
+    const height = ref.current.clientHeight;
+    if (scene.width !== width || scene.height !== height) {
+      setScene({ ...scene, width, height });
+    }
+  }
+
+  React.useEffect(() => {
+    resize();
+  }, [ref]);
+
+  React.useEffect(() => {
+    window.addEventListener('resize', resize);
+    return () => window.removeEventListener('resize', resize);
+  }, []);
+
+
   return (
     <div>
-      <div>
-        <input type="range" min="0" max="1" step="0.01" value={scene.colorD.r} onChange={onChangeR} />
+      <div className="absolute">
+        <div>
+          <input type="range" min="0" max="1" step="0.01" value={scene.colorD.r} onChange={onChangeR} />
+        </div>
+        <div>
+          <input type="range" min="0" max="1" step="0.01" value={scene.colorD.g} onChange={onChangeG} />
+        </div>
+        <div>
+          <input type="range" min="0" max="1" step="0.01" value={scene.colorD.b} onChange={onChangeB} />
+        </div>
+        <div>
+          <input type="range" min="-4.0" max="20.0" step="1" value={Math.log(scene.zoom) / Math.log(BASE)} onChange={onChangeZoom} />
+        </div>
       </div>
-      <div>
-        <input type="range" min="0" max="1" step="0.01" value={scene.colorD.g} onChange={onChangeG} />
+      <div className="h-screen w-full" ref={ref}>
+        <Scene scene={scene} onDrag={(dx, dy) => onDrag(dx, dy)} onScroll={forward => onScroll(forward)} />
       </div>
-      <div>
-        <input type="range" min="0" max="1" step="0.01" value={scene.colorD.b} onChange={onChangeB} />
-      </div>
-      <div>
-        <input type="range" min="-4.0" max="20.0" step="1" value={Math.log(scene.zoom) / Math.log(BASE)} onChange={onChangeZoom} />
-      </div>
-      <Scene scene={scene} onDrag={(dx, dy) => onDrag(dx, dy)} onScroll={forward => onScroll(forward)}/>
     </div>
   );
 }
