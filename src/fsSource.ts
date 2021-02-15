@@ -62,17 +62,41 @@ const fragmentShader = `
 
   float iterate(vec2 p) {
     vec2 z = p;
-    vec2 c = uJuliaC;
-    float i;
+    float dist = 1e20;
     for (float j = 0.; j < N; j++) {
-      i = j;
-      z = c_mul(z, c_mul(z, z)) + c;
-      float d = dot(z, z);
-      if (d < 0.05) {
-        return 1.0 - d / 0.05;
-      }
+      z = c_mul(z, z) + uJuliaC;
+      vec2 shifted = z - vec2(1.0, 1.0);
+      dist = min(dist, min(abs(shifted.x), abs(shifted.y)));
     }
-    return 0.0;
+    if (dist > 1.0) {
+      return 1.0;
+    }
+    return dist;
+  }
+
+  float iterate3(vec2 p) {
+    vec2 z = p;
+    float dist = 1e20;
+    for (float j = 0.; j < N; j++) {
+      z = c_mul(z, z) + uJuliaC;
+      vec2 d = z - vec2(1.0, 1.0);
+      dist = min(dist, abs(2.0 - dot(d, d)));
+    }
+    if (dist > 1.0) {
+      return 1.0;
+    }
+    return dist;
+  }
+
+  float iterate4(vec2 p) {
+    vec2 z = p;
+    float dist = 1e20;
+    for (float j = 0.; j < N; j++) {
+      z = c_mul(z, z) + uJuliaC;
+      vec2 d = z - vec2(1.0, 0.0);
+      dist = min(dist, max(abs(d.x), abs(d.y)));
+    }
+    return log(dist + 1.0);
   }
 
   float iterate2(vec2 p) {
@@ -100,13 +124,14 @@ const fragmentShader = `
 
     for (float i = 0.0; i < SS; i++) {
       vec2 uv = uCenter + (((gl_FragCoord.xy + random2()) / uResolution.y) - vec2(0.5 * ratio, 0.5)) / uZoom;
-      float n = iterate2(uv);
+      float r = iterate4(uv);
 
-      color += palette(n + 0.5, a, b, c, uColorD);
+      color += palette(r, a, b, c, uColorD);
       //color += vec3(n, n, n);
+      //color += vec3(r, g, b);
     }
 
-	  gl_FragColor = vec4(color / SS, 1.0);
+	  gl_FragColor = vec4(color / SS / 2.0, 1.0);
   }
 `
 export default fragmentShader;

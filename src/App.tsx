@@ -98,7 +98,7 @@ function App() {
           </div>
           <div className="flex items-center space-x-2">
             <span>C</span>
-            <input type="range" min="0.0" max="8.0" step="0.01" value={scene.colorC} onChange={onChangeC} />
+            <input type="range" min="0.0" max="4.0" step="0.005" value={scene.colorC} onChange={onChangeC} />
           </div>
         </div>
         <div className="bg-gray-900 bg-opacity-50 p-2 rounded">
