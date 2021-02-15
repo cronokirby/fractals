@@ -26,6 +26,16 @@ const fragmentShader = `
     return a + b * cos(6.28318 * (c * t + d));
   }
 
+  vec2 cart2polar(vec2 cart) {
+    return vec2(atan(cart.y, cart.x), length(cart));
+  }
+
+  
+  vec2 c_ln(vec2 z) {
+      vec2 polar = cart2polar(z);
+      return vec2(log(polar.y), polar.x);
+  }
+
   vec2 c_mul(vec2 a, vec2 b) {
     return vec2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
   }
@@ -63,19 +73,35 @@ const fragmentShader = `
     return 0.0;
   }
 
+  float iterate2(vec2 p) {
+    vec2 z = p;
+    vec2 c = vec2(0.45, 0.24);
+    float i;
+    for (float j = 0.; j < N; j++) {
+      i = j;
+      z = c_mul(z, z) + c;
+      float d = dot(z, z);
+      if (dot(z, z) > B * B) {
+        break;
+      }
+    }
+    return (i - log(log(dot(z, z)) / log(B)) / log(2.0)) / N;
+  }
+
   void main() {
     vec3 a = vec3(0.5);
     vec3 b = vec3(0.6);
-    vec3 c = vec3(3.0);
+    vec3 c = vec3(4.0);
 
     vec3 color = vec3(0);
     float ratio = uResolution.x / uResolution.y;
 
     for (float i = 0.0; i < SS; i++) {
       vec2 uv = uCenter + (((gl_FragCoord.xy + random2()) / uResolution.y) - vec2(0.5 * ratio, 0.5)) / uZoom;
-      float n = iterate(uv);
+      float n = iterate2(uv);
 
-      color += vec3(n, n, n);
+      color += palette(n + 0.5, a, b, c, uColorD);
+      //color += vec3(n, n, n);
     }
 
 	  gl_FragColor = vec4(color / SS, 1.0);
