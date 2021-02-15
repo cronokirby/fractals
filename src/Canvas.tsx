@@ -71,6 +71,7 @@ interface AttribLocations {
 
 interface UniformLocations {
   uResolution: WebGLUniformLocation;
+  uColorD: WebGLUniformLocation;
 }
 
 interface ProgramInfo {
@@ -96,7 +97,8 @@ class GLContext {
         vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
       },
       uniformLocations: {
-        uResolution: gl.getUniformLocation(shaderProgram, 'uResolution')
+        uResolution: gl.getUniformLocation(shaderProgram, 'uResolution'),
+        uColorD: gl.getUniformLocation(shaderProgram, 'uColorD')
       }
     } as ProgramInfo;
     const buffers = initBuffers(gl);
@@ -136,6 +138,7 @@ class GLContext {
 
     // Set the shader uniforms
     this.gl.uniform2fv(this.programInfo.uniformLocations.uResolution, [scene.width, scene.height])
+    this.gl.uniform3fv(this.programInfo.uniformLocations.uColorD, [0.1, 0.2, 0.3]);
 
     // Draw everything
     {

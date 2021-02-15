@@ -4,6 +4,7 @@ const fragmentShader = `
   #endif
 
   uniform vec2 uResolution;
+  uniform vec3 uColorD;
 
   #define N 64.
   #define B 4.
@@ -42,14 +43,13 @@ const fragmentShader = `
     vec3 a = vec3(0.5);
     vec3 b = vec3(0.6);
     vec3 c = vec3(3.0);
-    vec3 d = vec3(0.2, 0.1, 0.4);
 
     vec3 color = vec3(0);
     for (float i = 0.0; i < SS; i++) {
       vec2 uv = (2.5 * gl_FragCoord.xy + random2() - uResolution) / uResolution.y - vec2(1.0, 0.25);
       float n = iterate(uv) / N;
 
-      color += palette(n + 0.5, a, b, c, d);
+      color += palette(n + 0.5, a, b, c, uColorD);
     }
 
 	  gl_FragColor = vec4(color / SS, 1.0);
