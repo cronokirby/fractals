@@ -172,12 +172,13 @@ function initCtx(canvas: HTMLCanvasElement): GLContext | null {
 
 interface Props {
   scene: SceneInfo;
-  onClick(x: number, y: number): void;
+  onDrag(dx: number, dy: number): void;
 }
 
-export default function Scene({ scene, onClick }: Props) {
+export default function Scene({ scene, onDrag }: Props) {
   const ref = React.useRef<HTMLCanvasElement | null>(null);
   const [ctx, setCtx] = React.useState<GLContext | null>(null);
+  const [dragStart, setDragStart] = React.useState(null as null | { x: number, y: number });
   React.useEffect(() => {
     if (ref.current !== null) {
       const ctx = initCtx(ref.current);
@@ -189,14 +190,23 @@ export default function Scene({ scene, onClick }: Props) {
       ctx.draw(scene);
     }
   }, [ctx, scene])
-  const onClickEvent = (event: React.MouseEvent) => {
-    if (!ref.current) {
+  const onMouseDown = (event: React.MouseEvent) => {
+    setDragStart({ x: event.clientX, y: event.clientY });
+  };
+  const onMouseMove = (event: React.MouseEvent) => {
+    if (!dragStart) {
       return;
     }
-    const rect = ref.current.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    onClick(x, y);
-  }
-  return <canvas width={scene.width} height={scene.height} ref={ref} onClick={onClickEvent}></canvas>
+    onDrag(event.clientX - dragStart.x, event.clientY - dragStart.y);
+    setDragStart({x: event.clientX, y: event.clientY});
+  };
+  const onMouseUp = (event: React.MouseEvent) => {
+    setDragStart(null);
+  };
+  return <canvas
+    width={scene.width}
+    height={scene.height} ref={ref}
+    onMouseMove={e => onMouseMove(e)}
+    onMouseDown={e => onMouseDown(e)}
+    onMouseUp={e => onMouseUp(e)} />
 }

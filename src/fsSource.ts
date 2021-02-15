@@ -50,7 +50,7 @@ const fragmentShader = `
 
     float adjustedN = N * uZoom;
     for (float i = 0.0; i < SS; i++) {
-      vec2 uv = uCenter + (((gl_FragCoord.xy + random2()) / uResolution) - vec2(0.5));
+      vec2 uv = uCenter + (((gl_FragCoord.xy + random2()) / uResolution) - vec2(0.5)) / uZoom;
       float n = iterate(uv) / N;
 
       color += palette(n + 0.5, a, b, c, uColorD);

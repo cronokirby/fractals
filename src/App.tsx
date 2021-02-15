@@ -1,6 +1,8 @@
 import React from 'react';
 import Scene from './Scene';
 
+const BASE = 1.5;
+
 function App() {
   const [scene, setScene] = React.useState({
     width: 800,
@@ -23,17 +25,16 @@ function App() {
     setScene({ ...scene, colorD: { ...scene.colorD, b: Number(event.target.value) } })
   };
   const onChangeZoom = (event: any) => {
-    setScene({ ...scene, zoom: Number(event.target.value) })
+    setScene({ ...scene, zoom: BASE ** Number(event.target.value) })
   };
 
-  const onClick = (x: number, y: number) => {
+  const onDrag = (dx: number, dy: number) => {
     const center = scene.center;
-    console.log(x / scene.width - 0.5, y / scene.height - 0.5);
-    const adjustX = x / scene.width - 0.5;
-    const adjustY = 0.5 - y / scene.height;
-    center.x += adjustX;
-    center.y += adjustY;
-    setScene({...scene, center});
+    const adjustX = dx / scene.width / scene.zoom;
+    const adjustY = - dy / scene.height / scene.zoom;
+    center.x -= adjustX;
+    center.y -= adjustY;
+    setScene({ ...scene, center });
   }
 
   return (
@@ -48,9 +49,9 @@ function App() {
         <input type="range" min="0" max="1" step="0.01" value={scene.colorD.b} onChange={onChangeB} />
       </div>
       <div>
-        <input type="range" min="0.5" max="20.0" step="0.01" value={scene.zoom} onChange={onChangeZoom} />
+        <input type="range" min="-4.0" max="20.0" step="1" value={Math.log(scene.zoom) / Math.log(BASE)} onChange={onChangeZoom} />
       </div>
-      <Scene scene={scene} onClick={onClick} />
+      <Scene scene={scene} onDrag={(dx, dy) => onDrag(dx, dy)} />
     </div>
   );
 }
