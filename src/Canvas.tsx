@@ -61,7 +61,7 @@ function initBuffers(gl: WebGLRenderingContext) {
   }
 }
 
-function drawScene(gl: WebGLRenderingContext, programInfo: any, buffers: { position: WebGLBuffer }) {
+function drawScene(gl: WebGLRenderingContext, width: number, height: number, programInfo: any, buffers: { position: WebGLBuffer }) {
   gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
 
@@ -76,25 +76,28 @@ function drawScene(gl: WebGLRenderingContext, programInfo: any, buffers: { posit
     const type = gl.FLOAT;    // the data in the buffer is 32bit floats
     const normalize = false;  // don't normalize
     const stride = 0;         // how many bytes to get from one set of values to the next
-                              // 0 = use type and numComponents above
+    // 0 = use type and numComponents above
     const offset = 0;         // how many bytes inside the buffer to start from
     gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
     gl.vertexAttribPointer(
-        programInfo.attribLocations.vertexPosition,
-        numComponents,
-        type,
-        normalize,
-        stride,
-        offset);
+      programInfo.attribLocations.vertexPosition,
+      numComponents,
+      type,
+      normalize,
+      stride,
+      offset);
     gl.enableVertexAttribArray(
-        programInfo.attribLocations.vertexPosition);
+      programInfo.attribLocations.vertexPosition);
   }
 
   // Tell WebGL to use our program when drawing
-
   gl.useProgram(programInfo.program);
 
   // Set the shader uniforms
+  console.log(programInfo);
+  gl.uniform2fv(programInfo.uniformLocations.uResolution, [width, height])
+
+  // Draw everything
   {
     const offset = 0;
     const vertexCount = 4;
@@ -117,10 +120,13 @@ function initCanvas(canvas: HTMLCanvasElement, width: number, height: number) {
     program: shaderProgram,
     attribLocations: {
       vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+    },
+    uniformLocations: {
+      uResolution: gl.getUniformLocation(shaderProgram, 'uResolution')
     }
   }
   const buffers = initBuffers(gl);
-  drawScene(gl, programInfo, buffers);
+  drawScene(gl, width, height, programInfo, buffers);
 }
 
 interface CanvasProps {
