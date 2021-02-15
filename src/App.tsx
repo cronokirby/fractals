@@ -5,7 +5,7 @@ const BASE = 1.5;
 
 function App() {
   const [scene, setScene] = React.useState({
-    width: 800,
+    width: 1200,
     height: 800,
     zoom: 1.0,
     center: { x: 0.0, y: 0.0 },
@@ -30,7 +30,7 @@ function App() {
 
   const onDrag = (dx: number, dy: number) => {
     const center = scene.center;
-    const adjustX = dx / scene.width / scene.zoom;
+    const adjustX = dx / scene.height / scene.zoom;
     const adjustY = - dy / scene.height / scene.zoom;
     center.x -= adjustX;
     center.y -= adjustY;

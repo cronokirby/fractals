@@ -32,7 +32,7 @@ const fragmentShader = `
     float i;
     for (float j = 0.; j < N; j++) {
       i = j;
-      z = mat2(z, -z.y, z.x) * z + c;
+      z = vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y) + c;
       if (dot(z, z) > B * B) {
         break;
       }
@@ -50,7 +50,7 @@ const fragmentShader = `
 
     float adjustedN = N * uZoom;
     for (float i = 0.0; i < SS; i++) {
-      vec2 uv = uCenter + (((gl_FragCoord.xy + random2()) / uResolution) - vec2(0.5)) / uZoom;
+      vec2 uv = uCenter + (((gl_FragCoord.xy + random2()) / uResolution.y) - vec2(0.5 * ratio, 0.5)) / uZoom;
       float n = iterate(uv) / N;
 
       color += palette(n + 0.5, a, b, c, uColorD);
