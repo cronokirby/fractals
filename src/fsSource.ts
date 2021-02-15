@@ -26,17 +26,38 @@ const fragmentShader = `
     return a + b * cos(6.28318 * (c * t + d));
   }
 
+  vec2 c_mul(vec2 a, vec2 b) {
+    return vec2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
+  }
+
+  vec2 c_exp(vec2 z) {
+    return exp(z.x) * vec2(cos(z.y), sin(z.y));
+  }
+
+  float cosh(float x) {
+    return (exp(x) + exp(-x)) / 2.0;
+  }
+
+  float sinh(float x) {
+    return (exp(x) - exp(-x)) / 2.0;
+  }
+
+  vec2 c_sin(vec2 cart) {
+    float re = sin(cart.x) * cosh(cart.y);
+    float im = cos(cart.x) * sinh(cart.y);
+    return vec2(re, im);
+  }
+
   float iterate(vec2 p) {
-    vec2 z = vec2(0);
-    vec2 c = p;
+    vec2 z = p;
+    vec2 c = vec2(0.28, -0.02);
     float i;
     for (float j = 0.; j < N; j++) {
       i = j;
-      z = vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y) + c;
-      vec2 to_p = z - vec2(4.0, 4.0);
+      z = c_mul(z, c_mul(z, z)) + c;
       float d = dot(z, z);
-      if (d < 0.2) {
-        return d / 0.2;
+      if (d < 0.05) {
+        return 1.0 - d / 0.05;
       }
     }
     return 0.0;
