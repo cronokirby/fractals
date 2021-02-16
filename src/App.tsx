@@ -1,5 +1,5 @@
 import React from 'react';
-import Scene, { FractalType, IterationType } from './Scene';
+import Scene, { FractalType, IterationType, TrapType } from './Scene';
 
 const BASE = 1.5;
 
@@ -20,7 +20,8 @@ function App() {
       y: -0.02
     },
     fractalType: FractalType.Mandelbrot,
-    iterationType: IterationType.Square
+    iterationType: IterationType.Square,
+    trapType: TrapType.Iter
   });
   const onChangeR = (event: any) => {
     setScene({ ...scene, colorD: { ...scene.colorD, r: Number(event.target.value) } })
@@ -124,6 +125,17 @@ function App() {
             <span>Julia</span>
           </div>
         </form>
+        <div className="bg-gray-900 bg-opacity-50 p-2 rounded" hidden={scene.fractalType !== FractalType.Julia}>
+          <h2>Julia Parameters</h2>
+          <div className="flex items-center space-x-2">
+            <span>X</span>
+            <input type="range" min="-1.0" max="1.0" step="0.01" value={scene.juliaC.x} onChange={onChangeJuliaCx} />
+          </div>
+          <div className="flex items-center space-x-2">
+            <span>Y</span>
+            <input type="range" min="-1.0" max="1" step="0.01" value={scene.juliaC.y} onChange={onChangeJuliaCy} />
+          </div>
+        </div>
         <form className="bg-gray-900 bg-opacity-50 p-2 rounded">
           <h2>Iteration Type</h2>
           <div className="flex items-center space-x-2">
@@ -151,17 +163,21 @@ function App() {
             <span>X sin(X)</span>
           </div>
         </form>
-        <div className="bg-gray-900 bg-opacity-50 p-2 rounded" hidden={scene.fractalType !== FractalType.Julia}>
-          <h2>Julia Parameters</h2>
+        <form className="bg-gray-900 bg-opacity-50 p-2 rounded">
+          <h2>Orbit Trap</h2>
           <div className="flex items-center space-x-2">
-            <span>X</span>
-            <input type="range" min="-1.0" max="1.0" step="0.01" value={scene.juliaC.x} onChange={onChangeJuliaCx} />
+            <input type="radio"
+              checked={scene.trapType == TrapType.Iter}
+              onChange={() => setScene(scene => ({ ...scene, trapType: TrapType.Iter }))} />
+            <span>Iteration</span>
           </div>
           <div className="flex items-center space-x-2">
-            <span>Y</span>
-            <input type="range" min="-1.0" max="1" step="0.01" value={scene.juliaC.y} onChange={onChangeJuliaCy} />
+            <input type="radio"
+              checked={scene.trapType == TrapType.Circle}
+              onChange={() => setScene(scene => ({ ...scene, trapType: TrapType.Circle }))} />
+            <span>Circle</span>
           </div>
-        </div>
+        </form>
       </div>
       <div className="h-screen w-full" ref={ref}>
         <Scene scene={scene} onDrag={(dx, dy) => onDrag(dx, dy)} onScroll={forward => onScroll(forward)} />

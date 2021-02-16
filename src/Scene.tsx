@@ -14,6 +14,11 @@ export enum IterationType {
   XSinX = 3
 }
 
+export enum TrapType {
+  Iter = 0,
+  Circle = 1
+}
+
 export interface SceneInfo {
   width: number;
   height: number;
@@ -24,6 +29,7 @@ export interface SceneInfo {
   juliaC: { x: number, y: number };
   fractalType: FractalType;
   iterationType: IterationType;
+  trapType: TrapType;
 }
 
 interface Buffers {
@@ -102,6 +108,7 @@ interface UniformLocations {
   uZoom: WebGLUniformLocation;
   uFractalType: WebGLUniformLocation;
   uIterationType: WebGLUniformLocation;
+  uTrapType: WebGLUniformLocation;
 }
 
 interface ProgramInfo {
@@ -129,7 +136,8 @@ class GLContext {
         uJuliaC: gl.getUniformLocation(shaderProgram, 'uJuliaC'),
         uZoom: gl.getUniformLocation(shaderProgram, 'uZoom'),
         uFractalType: gl.getUniformLocation(shaderProgram, 'uFractalType'),
-        uIterationType: gl.getUniformLocation(shaderProgram, 'uIterationType')
+        uIterationType: gl.getUniformLocation(shaderProgram, 'uIterationType'),
+        uTrapType: gl.getUniformLocation(shaderProgram, 'uTrapType')
       }
     } as ProgramInfo;
     const buffers = initBuffers(gl);
@@ -176,6 +184,7 @@ class GLContext {
     this.gl.uniform1f(this.programInfo.uniformLocations.uZoom, scene.zoom);
     this.gl.uniform1i(this.programInfo.uniformLocations.uFractalType, scene.fractalType);
     this.gl.uniform1i(this.programInfo.uniformLocations.uIterationType, scene.iterationType);
+    this.gl.uniform1i(this.programInfo.uniformLocations.uTrapType, scene.trapType);
 
     // Draw everything
     {
