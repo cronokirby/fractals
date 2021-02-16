@@ -1,5 +1,5 @@
 import React from 'react';
-import Scene, { FractalType } from './Scene';
+import Scene, { FractalType, IterationType } from './Scene';
 
 const BASE = 1.5;
 
@@ -19,8 +19,9 @@ function App() {
       x: 0.35,
       y: -0.02
     },
-    fractalType: FractalType.Mandelbrot
-  })
+    fractalType: FractalType.Mandelbrot,
+    iterationType: IterationType.Square
+  });
   const onChangeR = (event: any) => {
     setScene({ ...scene, colorD: { ...scene.colorD, r: Number(event.target.value) } })
   };
@@ -121,6 +122,33 @@ function App() {
               checked={scene.fractalType == FractalType.Julia}
               onChange={() => setScene(scene => ({ ...scene, fractalType: FractalType.Julia }))} />
             <span>Julia</span>
+          </div>
+        </form>
+        <form className="bg-gray-900 bg-opacity-50 p-2 rounded">
+          <h2>Iteration Type</h2>
+          <div className="flex items-center space-x-2">
+            <input type="radio"
+              checked={scene.iterationType == IterationType.Square}
+              onChange={() => setScene(scene => ({ ...scene, iterationType: IterationType.Square }))} />
+            <span>Squared</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <input type="radio"
+              checked={scene.iterationType == IterationType.Cube}
+              onChange={() => setScene(scene => ({ ...scene, iterationType: IterationType.Cube }))} />
+            <span>Cubed</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <input type="radio"
+              checked={scene.iterationType == IterationType.Fourth}
+              onChange={() => setScene(scene => ({ ...scene, iterationType: IterationType.Fourth }))} />
+            <span>Fourth</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <input type="radio"
+              checked={scene.iterationType == IterationType.XSinX}
+              onChange={() => setScene(scene => ({ ...scene, iterationType: IterationType.XSinX }))} />
+            <span>X sin(X)</span>
           </div>
         </form>
         <div className="bg-gray-900 bg-opacity-50 p-2 rounded" hidden={scene.fractalType !== FractalType.Julia}>

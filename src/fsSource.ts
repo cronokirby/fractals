@@ -10,6 +10,7 @@ const fragmentShader = `
   uniform float uZoom;
   uniform vec2 uJuliaC;
   uniform int uFractalType;
+  uniform int uIterationType;
 
   #define N 64.
   #define B 4.
@@ -86,7 +87,7 @@ const fragmentShader = `
     return log(dist + 1.0);
   }
 
-  float iterate(vec2 p) {
+  float iterate_squared(vec2 p) {
     vec2 z;
     vec2 c;
     if (uFractalType == 0) {
@@ -108,6 +109,79 @@ const fragmentShader = `
       }
     }
     return (i - log(log(dot(z, z)) / log(B)) / log(2.0)) / N;
+  }
+
+  float iterate_cubed(vec2 p) {
+    vec2 z;
+    vec2 c;
+    if (uFractalType == 0) {
+      // Mandelbrot
+      z = vec2(0.0);
+      c = p;
+    } else {
+      // Julia
+      z = p;
+      c = uJuliaC;
+    }
+    float i;
+    for (float j = 0.; j < N; j++) {
+      i = j;
+      z = c_mul(z, c_mul(z, z)) + c;
+      float d = dot(z, z);
+      if (dot(z, z) > B * B) {
+        break;
+      }
+    }
+    return (i - log(log(dot(z, z)) / log(B)) / log(3.0)) / N;
+  }
+
+  float iterate_fourth(vec2 p) {
+    vec2 z;
+    vec2 c;
+    if (uFractalType == 0) {
+      // Mandelbrot
+      z = vec2(0.0);
+      c = p;
+    } else {
+      // Julia
+      z = p;
+      c = uJuliaC;
+    }
+    float i;
+    for (float j = 0.; j < N; j++) {
+      i = j;
+      vec2 zz = c_mul(z, z);
+      z = c_mul(zz, zz) + c;
+      float d = dot(z, z);
+      if (dot(z, z) > B * B) {
+        break;
+      }
+    }
+    return (i - log(log(dot(z, z)) / log(B)) / log(4.0)) / N;
+  }
+
+  float iterate_xsinx(vec2 p) {
+    vec2 z;
+    vec2 c;
+    if (uFractalType == 0) {
+      // Mandelbrot
+      z = vec2(0.0);
+      c = p;
+    } else {
+      // Julia
+      z = p;
+      c = uJuliaC;
+    }
+    float i;
+    for (float j = 0.; j < N; j++) {
+      i = j;
+      z = c_mul(z, c_sin(z)) + c;
+      float d = dot(z, z);
+      if (dot(z, z) > B * B) {
+        break;
+      }
+    }
+    return (i - log(log(dot(z, z)) / log(B)) / log(4.0)) / N;
   }
 
   float iterate2(vec2 p) {
@@ -133,11 +207,34 @@ const fragmentShader = `
     vec3 color = vec3(0);
     float ratio = uResolution.x / uResolution.y;
 
-    for (float i = 0.0; i < SS; i++) {
-      vec2 uv = uCenter + (((gl_FragCoord.xy + random2()) / uResolution.y) - vec2(0.5 * ratio, 0.5)) / uZoom;
-      float r = iterate(uv);
+    if (uIterationType == 0) {
+      for (float i = 0.0; i < SS; i++) {
+        vec2 uv = uCenter + (((gl_FragCoord.xy + random2()) / uResolution.y) - vec2(0.5 * ratio, 0.5)) / uZoom;
+        float r = iterate_squared(uv);
 
-      color += palette(r, a, b, c, uColorD);
+        color += palette(r, a, b, c, uColorD);
+      }
+    } else if (uIterationType == 1) {
+      for (float i = 0.0; i < SS; i++) {
+        vec2 uv = uCenter + (((gl_FragCoord.xy + random2()) / uResolution.y) - vec2(0.5 * ratio, 0.5)) / uZoom;
+        float r = iterate_cubed(uv);
+
+        color += palette(r, a, b, c, uColorD);
+      }
+    } else if (uIterationType == 2) {
+      for (float i = 0.0; i < SS; i++) {
+        vec2 uv = uCenter + (((gl_FragCoord.xy + random2()) / uResolution.y) - vec2(0.5 * ratio, 0.5)) / uZoom;
+        float r = iterate_fourth(uv);
+
+        color += palette(r, a, b, c, uColorD);
+      }
+    } else {
+      for (float i = 0.0; i < SS; i++) {
+        vec2 uv = uCenter + (((gl_FragCoord.xy + random2()) / uResolution.y) - vec2(0.5 * ratio, 0.5)) / uZoom;
+        float r = iterate_xsinx(uv);
+
+        color += palette(r, a, b, c, uColorD);
+      }
     }
 
 	  gl_FragColor = vec4(color / SS, 1.0);

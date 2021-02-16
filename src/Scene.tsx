@@ -7,6 +7,13 @@ export enum FractalType {
   Julia = 1
 }
 
+export enum IterationType {
+  Square = 0,
+  Cube = 1,
+  Fourth = 2,
+  XSinX = 3
+}
+
 export interface SceneInfo {
   width: number;
   height: number;
@@ -16,6 +23,7 @@ export interface SceneInfo {
   colorC: number;
   juliaC: { x: number, y: number };
   fractalType: FractalType;
+  iterationType: IterationType;
 }
 
 interface Buffers {
@@ -93,6 +101,7 @@ interface UniformLocations {
   uJuliaC: WebGLUniformLocation;
   uZoom: WebGLUniformLocation;
   uFractalType: WebGLUniformLocation;
+  uIterationType: WebGLUniformLocation;
 }
 
 interface ProgramInfo {
@@ -100,7 +109,6 @@ interface ProgramInfo {
   attribLocations: AttribLocations;
   uniformLocations: UniformLocations;
 }
-
 
 class GLContext {
   private constructor(private gl: WebGLRenderingContext, private programInfo: ProgramInfo, private buffers: Buffers) {
@@ -120,7 +128,8 @@ class GLContext {
         uCenter: gl.getUniformLocation(shaderProgram, 'uCenter'),
         uJuliaC: gl.getUniformLocation(shaderProgram, 'uJuliaC'),
         uZoom: gl.getUniformLocation(shaderProgram, 'uZoom'),
-        uFractalType: gl.getUniformLocation(shaderProgram, 'uFractalType')
+        uFractalType: gl.getUniformLocation(shaderProgram, 'uFractalType'),
+        uIterationType: gl.getUniformLocation(shaderProgram, 'uIterationType')
       }
     } as ProgramInfo;
     const buffers = initBuffers(gl);
@@ -166,6 +175,7 @@ class GLContext {
     this.gl.uniform2fv(this.programInfo.uniformLocations.uJuliaC, [scene.juliaC.x, scene.juliaC.y]);
     this.gl.uniform1f(this.programInfo.uniformLocations.uZoom, scene.zoom);
     this.gl.uniform1i(this.programInfo.uniformLocations.uFractalType, scene.fractalType);
+    this.gl.uniform1i(this.programInfo.uniformLocations.uIterationType, scene.iterationType);
 
     // Draw everything
     {
