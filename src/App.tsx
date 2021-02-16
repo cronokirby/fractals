@@ -21,7 +21,11 @@ function App() {
     },
     fractalType: FractalType.Mandelbrot,
     iterationType: IterationType.Square,
-    trapType: TrapType.Iter
+    trapType: TrapType.Iter,
+    orbitCenter: {
+      x: 0.0,
+      y: 0.0
+    }
   });
   const onChangeR = (event: any) => {
     setScene({ ...scene, colorD: { ...scene.colorD, r: Number(event.target.value) } })
@@ -40,6 +44,12 @@ function App() {
   };
   const onChangeJuliaCy = (event: any) => {
     setScene({ ...scene, juliaC: { ...scene.juliaC, y: Number(event.target.value) } })
+  };
+  const onChangeOrbitCx = (event: any) => {
+    setScene({ ...scene, orbitCenter: { ...scene.orbitCenter, x: Number(event.target.value) } })
+  };
+  const onChangeOrbitCy = (event: any) => {
+    setScene({ ...scene, orbitCenter: { ...scene.orbitCenter, y: Number(event.target.value) } })
   };
   const onChangeZoom = (event: any) => {
     setScene({ ...scene, zoom: BASE ** Number(event.target.value) })
@@ -178,6 +188,17 @@ function App() {
             <span>Circle</span>
           </div>
         </form>
+        <div className="bg-gray-900 bg-opacity-50 p-2 rounded" hidden={scene.trapType === TrapType.Iter}>
+          <h2>Orbit Center</h2>
+          <div className="flex items-center space-x-2">
+            <span>X</span>
+            <input type="range" min="-1.0" max="1.0" step="0.01" value={scene.orbitCenter.x} onChange={onChangeOrbitCx} />
+          </div>
+          <div className="flex items-center space-x-2">
+            <span>Y</span>
+            <input type="range" min="-1.0" max="1" step="0.01" value={scene.orbitCenter.y} onChange={onChangeOrbitCy} />
+          </div>
+        </div>
       </div>
       <div className="h-screen w-full" ref={ref}>
         <Scene scene={scene} onDrag={(dx, dy) => onDrag(dx, dy)} onScroll={forward => onScroll(forward)} />

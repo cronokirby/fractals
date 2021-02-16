@@ -12,6 +12,7 @@ const fragmentShader = `
   uniform int uFractalType;
   uniform int uIterationType;
   uniform int uTrapType;
+  uniform vec2 uOrbitCenter;
 
   #define N 64.
   #define SS 16.
@@ -102,7 +103,8 @@ const fragmentShader = `
     float dist = 1e20;
     for (float j = 0.; j < N; j++) {
       z = c_mul(z, z) + c;
-      dist = min(dist, dot(z, z));
+      vec2 dz = z - uOrbitCenter;
+      dist = min(dist, dot(dz, dz));
     }
     if (dist > 1.0) {
       return 1.0;
@@ -150,7 +152,8 @@ const fragmentShader = `
     float dist = 1e20;
     for (float j = 0.; j < N; j++) {
       z = c_mul(z, c_mul(z, z)) + c;
-      dist = min(dist, dot(z, z));
+      vec2 dz = z - uOrbitCenter;
+      dist = min(dist, dot(dz, dz));
     }
     if (dist > 1.0) {
       return 1.0;
@@ -200,8 +203,8 @@ const fragmentShader = `
     for (float j = 0.; j < N; j++) {
       vec2 zz = c_mul(z, z);
       z = c_mul(zz, zz) + c;
-      float d = dot(z, z);
-      dist = min(dist, dot(z, z));
+      vec2 dz = z - uOrbitCenter;
+      dist = min(dist, dot(dz, dz));
     }
     if (dist > 1.0) {
       return 1.0;
@@ -249,7 +252,8 @@ const fragmentShader = `
     float dist = 1e20;
     for (float j = 0.; j < N; j++) {
       z = c_mul(z, c_sin(z)) + c;
-      dist = min(dist, dot(z, z));
+      vec2 dz = z - uOrbitCenter;
+      dist = min(dist, dot(dz, dz));
     }
     if (dist > 1.0) {
       return 1.0;

@@ -30,6 +30,7 @@ export interface SceneInfo {
   fractalType: FractalType;
   iterationType: IterationType;
   trapType: TrapType;
+  orbitCenter: { x: number, y: number };
 }
 
 interface Buffers {
@@ -109,6 +110,7 @@ interface UniformLocations {
   uFractalType: WebGLUniformLocation;
   uIterationType: WebGLUniformLocation;
   uTrapType: WebGLUniformLocation;
+  uOrbitCenter: WebGLUniformLocation;
 }
 
 interface ProgramInfo {
@@ -137,7 +139,8 @@ class GLContext {
         uZoom: gl.getUniformLocation(shaderProgram, 'uZoom'),
         uFractalType: gl.getUniformLocation(shaderProgram, 'uFractalType'),
         uIterationType: gl.getUniformLocation(shaderProgram, 'uIterationType'),
-        uTrapType: gl.getUniformLocation(shaderProgram, 'uTrapType')
+        uTrapType: gl.getUniformLocation(shaderProgram, 'uTrapType'),
+        uOrbitCenter: gl.getUniformLocation(shaderProgram, 'uOrbitCenter')
       }
     } as ProgramInfo;
     const buffers = initBuffers(gl);
@@ -185,6 +188,7 @@ class GLContext {
     this.gl.uniform1i(this.programInfo.uniformLocations.uFractalType, scene.fractalType);
     this.gl.uniform1i(this.programInfo.uniformLocations.uIterationType, scene.iterationType);
     this.gl.uniform1i(this.programInfo.uniformLocations.uTrapType, scene.trapType);
+    this.gl.uniform2fv(this.programInfo.uniformLocations.uOrbitCenter, [scene.orbitCenter.x, scene.orbitCenter.y]);
 
     // Draw everything
     {
