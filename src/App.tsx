@@ -1,5 +1,5 @@
 import React from 'react';
-import Scene from './Scene';
+import Scene, { FractalType } from './Scene';
 
 const BASE = 1.5;
 
@@ -18,7 +18,8 @@ function App() {
     juliaC: {
       x: 0.35,
       y: -0.02
-    }
+    },
+    fractalType: FractalType.Mandelbrot
   })
   const onChangeR = (event: any) => {
     setScene({ ...scene, colorD: { ...scene.colorD, r: Number(event.target.value) } })
@@ -33,10 +34,10 @@ function App() {
     setScene({ ...scene, colorC: Number(event.target.value) })
   };
   const onChangeJuliaCx = (event: any) => {
-    setScene({ ...scene, juliaC: {...scene.juliaC, x: Number(event.target.value) }})
+    setScene({ ...scene, juliaC: { ...scene.juliaC, x: Number(event.target.value) } })
   };
   const onChangeJuliaCy = (event: any) => {
-    setScene({ ...scene, juliaC: {...scene.juliaC, y: Number(event.target.value) }})
+    setScene({ ...scene, juliaC: { ...scene.juliaC, y: Number(event.target.value) } })
   };
   const onChangeZoom = (event: any) => {
     setScene({ ...scene, zoom: BASE ** Number(event.target.value) })
@@ -107,7 +108,22 @@ function App() {
             <input type="range" min="-4.0" max="20.0" step="1" value={Math.log(scene.zoom) / Math.log(BASE)} onChange={onChangeZoom} />
           </div>
         </div>
-        <div className="bg-gray-900 bg-opacity-50 p-2 rounded">
+        <form className="bg-gray-900 bg-opacity-50 p-2 rounded">
+          <h2>Fractal Type</h2>
+          <div className="flex items-center space-x-2">
+            <input type="radio" value="Mandelbrot"
+              checked={scene.fractalType == FractalType.Mandelbrot}
+              onChange={() => setScene(scene => ({ ...scene, fractalType: FractalType.Mandelbrot }))} />
+            <span>Mandelbrot</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <input type="radio" value="Julia"
+              checked={scene.fractalType == FractalType.Julia}
+              onChange={() => setScene(scene => ({ ...scene, fractalType: FractalType.Julia }))} />
+            <span>Julia</span>
+          </div>
+        </form>
+        <div className="bg-gray-900 bg-opacity-50 p-2 rounded" hidden={scene.fractalType !== FractalType.Julia}>
           <h2>Julia Parameters</h2>
           <div className="flex items-center space-x-2">
             <span>X</span>

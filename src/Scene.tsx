@@ -2,6 +2,11 @@ import React from 'react';
 import vsSource from './vsSource';
 import fsSource from './fsSource';
 
+export enum FractalType {
+  Mandelbrot = 0,
+  Julia = 1
+}
+
 export interface SceneInfo {
   width: number;
   height: number;
@@ -10,6 +15,7 @@ export interface SceneInfo {
   colorD: { r: number, g: number, b: number };
   colorC: number;
   juliaC: { x: number, y: number };
+  fractalType: FractalType;
 }
 
 interface Buffers {
@@ -86,6 +92,7 @@ interface UniformLocations {
   uCenter: WebGLUniformLocation;
   uJuliaC: WebGLUniformLocation;
   uZoom: WebGLUniformLocation;
+  uFractalType: WebGLUniformLocation;
 }
 
 interface ProgramInfo {
@@ -112,7 +119,8 @@ class GLContext {
         uColorC: gl.getUniformLocation(shaderProgram, 'uColorC'),
         uCenter: gl.getUniformLocation(shaderProgram, 'uCenter'),
         uJuliaC: gl.getUniformLocation(shaderProgram, 'uJuliaC'),
-        uZoom: gl.getUniformLocation(shaderProgram, 'uZoom')
+        uZoom: gl.getUniformLocation(shaderProgram, 'uZoom'),
+        uFractalType: gl.getUniformLocation(shaderProgram, 'uFractalType')
       }
     } as ProgramInfo;
     const buffers = initBuffers(gl);
@@ -157,6 +165,7 @@ class GLContext {
     this.gl.uniform2fv(this.programInfo.uniformLocations.uCenter, [scene.center.x, scene.center.y]);
     this.gl.uniform2fv(this.programInfo.uniformLocations.uJuliaC, [scene.juliaC.x, scene.juliaC.y]);
     this.gl.uniform1f(this.programInfo.uniformLocations.uZoom, scene.zoom);
+    this.gl.uniform1i(this.programInfo.uniformLocations.uFractalType, scene.fractalType);
 
     // Draw everything
     {
