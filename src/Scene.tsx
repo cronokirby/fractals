@@ -16,7 +16,8 @@ export enum IterationType {
 
 export enum TrapType {
   Iter = 0,
-  Circle = 1
+  Circle = 1,
+  XLine = 2
 }
 
 export interface SceneInfo {

@@ -177,26 +177,32 @@ function App() {
           <h2>Orbit Trap</h2>
           <div className="flex items-center space-x-2">
             <input type="radio"
-              checked={scene.trapType == TrapType.Iter}
+              checked={scene.trapType === TrapType.Iter}
               onChange={() => setScene(scene => ({ ...scene, trapType: TrapType.Iter }))} />
             <span>Iteration</span>
           </div>
           <div className="flex items-center space-x-2">
             <input type="radio"
-              checked={scene.trapType == TrapType.Circle}
+              checked={scene.trapType === TrapType.Circle}
               onChange={() => setScene(scene => ({ ...scene, trapType: TrapType.Circle }))} />
             <span>Circle</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <input type="radio"
+              checked={scene.trapType === TrapType.XLine}
+              onChange={() => setScene(scene => ({ ...scene, trapType: TrapType.XLine }))} />
+            <span>XLine</span>
           </div>
         </form>
         <div className="bg-gray-900 bg-opacity-50 p-2 rounded" hidden={scene.trapType === TrapType.Iter}>
           <h2>Orbit Center</h2>
           <div className="flex items-center space-x-2">
             <span>X</span>
-            <input type="range" min="-1.0" max="1.0" step="0.01" value={scene.orbitCenter.x} onChange={onChangeOrbitCx} />
+            <input type="range" min="-2.0" max="2.0" step="0.01" value={scene.orbitCenter.x} onChange={onChangeOrbitCx} />
           </div>
           <div className="flex items-center space-x-2">
             <span>Y</span>
-            <input type="range" min="-1.0" max="1" step="0.01" value={scene.orbitCenter.y} onChange={onChangeOrbitCy} />
+            <input type="range" min="-2.0" max="2.0" step="0.01" value={scene.orbitCenter.y} onChange={onChangeOrbitCy} />
           </div>
         </div>
       </div>
