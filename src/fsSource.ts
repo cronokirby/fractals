@@ -13,7 +13,6 @@ const fragmentShader = `
   uniform int uIterationType;
 
   #define N 64.
-  #define B 4.
   #define SS 16.
 
   float random(in vec2 uv) {
@@ -62,31 +61,6 @@ const fragmentShader = `
     return vec2(re, im);
   }
 
-  float iterate3(vec2 p) {
-    vec2 z = p;
-    float dist = 1e20;
-    for (float j = 0.; j < N; j++) {
-      z = c_mul(z, z) + uJuliaC;
-      vec2 d = z - vec2(1.0, 1.0);
-      dist = min(dist, abs(2.0 - dot(d, d)));
-    }
-    if (dist > 1.0) {
-      return 1.0;
-    }
-    return dist;
-  }
-
-  float iterate4(vec2 p) {
-    vec2 z = p;
-    float dist = 1e20;
-    for (float j = 0.; j < N; j++) {
-      z = c_mul(z, z) + uJuliaC;
-      vec2 d = z - vec2(1.0, 0.0);
-      dist = min(dist, max(abs(d.x), abs(d.y)));
-    }
-    return log(dist + 1.0);
-  }
-
   float iterate_squared(vec2 p) {
     vec2 z;
     vec2 c;
@@ -100,6 +74,7 @@ const fragmentShader = `
       c = uJuliaC;
     }
     float i;
+    float B = 4.0;
     for (float j = 0.; j < N; j++) {
       i = j;
       z = c_mul(z, z) + c;
@@ -124,6 +99,7 @@ const fragmentShader = `
       c = uJuliaC;
     }
     float i;
+    float B = 2.0;
     for (float j = 0.; j < N; j++) {
       i = j;
       z = c_mul(z, c_mul(z, z)) + c;
@@ -147,6 +123,7 @@ const fragmentShader = `
       z = p;
       c = uJuliaC;
     }
+    float B = 2.0;
     float i;
     for (float j = 0.; j < N; j++) {
       i = j;
@@ -173,6 +150,7 @@ const fragmentShader = `
       c = uJuliaC;
     }
     float i;
+    float B = 40.0;
     for (float j = 0.; j < N; j++) {
       i = j;
       z = c_mul(z, c_sin(z)) + c;
@@ -181,22 +159,7 @@ const fragmentShader = `
         break;
       }
     }
-    return (i - log(log(dot(z, z)) / log(B)) / log(4.0)) / N;
-  }
-
-  float iterate2(vec2 p) {
-    vec2 z = p;
-    vec2 c = uJuliaC;
-    float i;
-    for (float j = 0.; j < N; j++) {
-      i = j;
-      z = c_mul(z, z) + c;
-      float d = dot(z, z);
-      if (dot(z, z) > B * B) {
-        break;
-      }
-    }
-    return (i - log(log(dot(z, z)) / log(B)) / log(2.0)) / N;
+    return (i - log(log(dot(z, z)) / log(B))) / N;
   }
 
   void main() {
