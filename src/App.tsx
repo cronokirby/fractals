@@ -191,7 +191,13 @@ function App() {
             <input type="radio"
               checked={scene.trapType === TrapType.XLine}
               onChange={() => setScene(scene => ({ ...scene, trapType: TrapType.XLine }))} />
-            <span>XLine</span>
+            <span>YLine</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <input type="radio"
+              checked={scene.trapType === TrapType.Square}
+              onChange={() => setScene(scene => ({ ...scene, trapType: TrapType.Square }))} />
+            <span>Square</span>
           </div>
         </form>
         <div className="bg-gray-900 bg-opacity-50 p-2 rounded" hidden={scene.trapType === TrapType.Iter}>

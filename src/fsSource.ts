@@ -128,7 +128,31 @@ const fragmentShader = `
     for (float j = 0.; j < N; j++) {
       z = c_mul(z, z) + c;
       vec2 dz = z - uOrbitCenter;
-      dist = min(dist, abs(z.x));
+      dist = min(dist, abs(dz.x));
+    }
+    if (dist > 1.0) {
+      return 1.0;
+    }
+    return dist;
+  }
+
+  float iterate_squared_trap_square(vec2 p) {
+    vec2 z;
+    vec2 c;
+    if (uFractalType == 0) {
+      // Mandelbrot
+      z = vec2(0.0);
+      c = p;
+    } else {
+      // Julia
+      z = p;
+      c = uJuliaC;
+    }
+    float dist = 1e20;
+    for (float j = 0.; j < N; j++) {
+      z = c_mul(z, z) + c;
+      vec2 dz = z - uOrbitCenter;
+      dist = min(dist, max(abs(dz.x), abs(dz.y)));
     }
     if (dist > 1.0) {
       return 1.0;
@@ -202,6 +226,30 @@ const fragmentShader = `
       z = c_mul(z, c_mul(z, z)) + c;
       vec2 dz = z - uOrbitCenter;
       dist = min(dist, abs(dz.x));
+    }
+    if (dist > 1.0) {
+      return 1.0;
+    }
+    return dist;
+  }
+
+  float iterate_cubed_trap_square(vec2 p) {
+    vec2 z;
+    vec2 c;
+    if (uFractalType == 0) {
+      // Mandelbrot
+      z = vec2(0.0);
+      c = p;
+    } else {
+      // Julia
+      z = p;
+      c = uJuliaC;
+    }
+    float dist = 1e20;
+    for (float j = 0.; j < N; j++) {
+      z = c_mul(z, c_mul(z, z)) + c;
+      vec2 dz = z - uOrbitCenter;
+      dist = min(dist, max(abs(dz.x), abs(dz.y)));
     }
     if (dist > 1.0) {
       return 1.0;
@@ -285,6 +333,31 @@ const fragmentShader = `
     return dist;
   }
 
+  float iterate_fourth_trap_square(vec2 p) {
+    vec2 z;
+    vec2 c;
+    if (uFractalType == 0) {
+      // Mandelbrot
+      z = vec2(0.0);
+      c = p;
+    } else {
+      // Julia
+      z = p;
+      c = uJuliaC;
+    }
+    float dist = 1e20;
+    for (float j = 0.; j < N; j++) {
+      vec2 zz = c_mul(z, z);
+      z = c_mul(zz, zz) + c;
+      vec2 dz = z - uOrbitCenter;
+      dist = min(dist, max(abs(dz.x), abs(dz.y)));
+    }
+    if (dist > 1.0) {
+      return 1.0;
+    }
+    return dist;
+  }
+
   float iterate_xsinx_trap_iter(vec2 p) {
     vec2 z;
     vec2 c;
@@ -358,6 +431,30 @@ const fragmentShader = `
     return dist;
   }
 
+  float iterate_xsinx_trap_square(vec2 p) {
+    vec2 z;
+    vec2 c;
+    if (uFractalType == 0) {
+      // Mandelbrot
+      z = vec2(0.0);
+      c = p;
+    } else {
+      // Julia
+      z = p;
+      c = uJuliaC;
+    }
+    float dist = 1e20;
+    for (float j = 0.; j < N; j++) {
+      z = c_mul(z, c_sin(z)) + c;
+      vec2 dz = z - uOrbitCenter;
+      dist = min(dist, max(abs(dz.x), abs(dz.y)));
+    }
+    if (dist > 1.0) {
+      return 1.0;
+    }
+    return dist;
+  }
+
   void main() {
     vec3 a = vec3(0.5);
     vec3 b = vec3(0.6);
@@ -381,10 +478,17 @@ const fragmentShader = `
 
           color += palette(r, a, b, c, uColorD);
         }
-      } else {
+      } else if (uTrapType == 2) {
         for (float i = 0.0; i < SS; i++) {
           vec2 uv = uCenter + (((gl_FragCoord.xy + random2()) / uResolution.y) - vec2(0.5 * ratio, 0.5)) / uZoom;
           float r = iterate_squared_trap_xline(uv);
+
+          color += palette(r, a, b, c, uColorD);
+        }
+      } else {
+        for (float i = 0.0; i < SS; i++) {
+          vec2 uv = uCenter + (((gl_FragCoord.xy + random2()) / uResolution.y) - vec2(0.5 * ratio, 0.5)) / uZoom;
+          float r = iterate_squared_trap_square(uv);
 
           color += palette(r, a, b, c, uColorD);
         }
@@ -404,10 +508,17 @@ const fragmentShader = `
 
           color += palette(r, a, b, c, uColorD);
         }
-      } else {
+      } else if (uTrapType == 2) {
         for (float i = 0.0; i < SS; i++) {
           vec2 uv = uCenter + (((gl_FragCoord.xy + random2()) / uResolution.y) - vec2(0.5 * ratio, 0.5)) / uZoom;
           float r = iterate_cubed_trap_xline(uv);
+
+          color += palette(r, a, b, c, uColorD);
+        }
+      } else {
+        for (float i = 0.0; i < SS; i++) {
+          vec2 uv = uCenter + (((gl_FragCoord.xy + random2()) / uResolution.y) - vec2(0.5 * ratio, 0.5)) / uZoom;
+          float r = iterate_cubed_trap_square(uv);
 
           color += palette(r, a, b, c, uColorD);
         }
@@ -427,10 +538,17 @@ const fragmentShader = `
 
           color += palette(r, a, b, c, uColorD);
         }
-      } else {
+      } else if (uTrapType == 2) {
         for (float i = 0.0; i < SS; i++) {
           vec2 uv = uCenter + (((gl_FragCoord.xy + random2()) / uResolution.y) - vec2(0.5 * ratio, 0.5)) / uZoom;
           float r = iterate_fourth_trap_xline(uv);
+
+          color += palette(r, a, b, c, uColorD);
+        }
+      } else{
+        for (float i = 0.0; i < SS; i++) {
+          vec2 uv = uCenter + (((gl_FragCoord.xy + random2()) / uResolution.y) - vec2(0.5 * ratio, 0.5)) / uZoom;
+          float r = iterate_fourth_trap_square(uv);
 
           color += palette(r, a, b, c, uColorD);
         }
@@ -450,10 +568,17 @@ const fragmentShader = `
 
           color += palette(r, a, b, c, uColorD);
         }
-      } else {
+      } else if (uTrapType == 2) {
         for (float i = 0.0; i < SS; i++) {
           vec2 uv = uCenter + (((gl_FragCoord.xy + random2()) / uResolution.y) - vec2(0.5 * ratio, 0.5)) / uZoom;
           float r = iterate_xsinx_trap_xline(uv);
+
+          color += palette(r, a, b, c, uColorD);
+        }
+      } else {
+        for (float i = 0.0; i < SS; i++) {
+          vec2 uv = uCenter + (((gl_FragCoord.xy + random2()) / uResolution.y) - vec2(0.5 * ratio, 0.5)) / uZoom;
+          float r = iterate_xsinx_trap_square(uv);
 
           color += palette(r, a, b, c, uColorD);
         }
