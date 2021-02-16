@@ -25,7 +25,8 @@ function App() {
     orbitCenter: {
       x: 0.0,
       y: 0.0
-    }
+    },
+    trapDistance: 0.0
   });
   const onChangeR = (event: any) => {
     setScene({ ...scene, colorD: { ...scene.colorD, r: Number(event.target.value) } })
@@ -53,6 +54,9 @@ function App() {
   };
   const onChangeZoom = (event: any) => {
     setScene({ ...scene, zoom: BASE ** Number(event.target.value) })
+  };
+  const onChangeTrapDistance = (event: any) => {
+    setScene({ ...scene, trapDistance: Number(event.target.value) })
   };
 
   const onDrag = (dx: number, dy: number) => {
@@ -204,11 +208,17 @@ function App() {
           <h2>Orbit Center</h2>
           <div className="flex items-center space-x-2">
             <span>X</span>
-            <input type="range" min="-2.0" max="2.0" step="0.01" value={scene.orbitCenter.x} onChange={onChangeOrbitCx} />
+            <input type="range" min="-3.0" max="3.0" step="0.01" value={scene.orbitCenter.x} onChange={onChangeOrbitCx} />
           </div>
           <div className="flex items-center space-x-2">
             <span>Y</span>
-            <input type="range" min="-2.0" max="2.0" step="0.01" value={scene.orbitCenter.y} onChange={onChangeOrbitCy} />
+            <input type="range" min="-3.0" max="3.0" step="0.01" value={scene.orbitCenter.y} onChange={onChangeOrbitCy} />
+          </div>
+        </div>
+        <div className="bg-gray-900 bg-opacity-50 p-2 rounded" hidden={scene.trapType === TrapType.Iter}>
+          <h2>Trap Distance</h2>
+          <div className="flex items-center space-x-2">
+            <input type="range" min="0.0" max="4.0" step="0.01" value={scene.trapDistance} onChange={onChangeTrapDistance} />
           </div>
         </div>
       </div>

@@ -13,6 +13,7 @@ const fragmentShader = `
   uniform int uIterationType;
   uniform int uTrapType;
   uniform vec2 uOrbitCenter;
+  uniform float uTrapDistance;
 
   #define N 64.
   #define SS 16.
@@ -104,7 +105,7 @@ const fragmentShader = `
     for (float j = 0.; j < N; j++) {
       z = c_mul(z, z) + c;
       vec2 dz = z - uOrbitCenter;
-      dist = min(dist, dot(dz, dz));
+      dist = min(dist, abs(uTrapDistance - dot(dz, dz)));
     }
     if (dist > 1.0) {
       return 1.0;
@@ -128,7 +129,7 @@ const fragmentShader = `
     for (float j = 0.; j < N; j++) {
       z = c_mul(z, z) + c;
       vec2 dz = z - uOrbitCenter;
-      dist = min(dist, abs(dz.x));
+      dist = min(dist, abs(uTrapDistance - abs(dz.x)));
     }
     if (dist > 1.0) {
       return 1.0;
@@ -152,7 +153,7 @@ const fragmentShader = `
     for (float j = 0.; j < N; j++) {
       z = c_mul(z, z) + c;
       vec2 dz = z - uOrbitCenter;
-      dist = min(dist, max(abs(dz.x), abs(dz.y)));
+      dist = min(dist, abs(uTrapDistance - max(abs(dz.x), abs(dz.y))));
     }
     if (dist > 1.0) {
       return 1.0;
@@ -201,7 +202,7 @@ const fragmentShader = `
     for (float j = 0.; j < N; j++) {
       z = c_mul(z, c_mul(z, z)) + c;
       vec2 dz = z - uOrbitCenter;
-      dist = min(dist, dot(dz, dz));
+      dist = min(dist, abs(uTrapDistance - dot(dz, dz)));
     }
     if (dist > 1.0) {
       return 1.0;
@@ -225,7 +226,7 @@ const fragmentShader = `
     for (float j = 0.; j < N; j++) {
       z = c_mul(z, c_mul(z, z)) + c;
       vec2 dz = z - uOrbitCenter;
-      dist = min(dist, abs(dz.x));
+      dist = min(dist, abs(uTrapDistance - abs(dz.x)));
     }
     if (dist > 1.0) {
       return 1.0;
@@ -249,7 +250,7 @@ const fragmentShader = `
     for (float j = 0.; j < N; j++) {
       z = c_mul(z, c_mul(z, z)) + c;
       vec2 dz = z - uOrbitCenter;
-      dist = min(dist, max(abs(dz.x), abs(dz.y)));
+      dist = min(dist, abs(uTrapDistance - max(abs(dz.x), abs(dz.y))));
     }
     if (dist > 1.0) {
       return 1.0;
@@ -300,7 +301,7 @@ const fragmentShader = `
       vec2 zz = c_mul(z, z);
       z = c_mul(zz, zz) + c;
       vec2 dz = z - uOrbitCenter;
-      dist = min(dist, dot(dz, dz));
+      dist = min(dist, abs(uTrapDistance - dot(dz, dz)));
     }
     if (dist > 1.0) {
       return 1.0;
@@ -325,7 +326,7 @@ const fragmentShader = `
       vec2 zz = c_mul(z, z);
       z = c_mul(zz, zz) + c;
       vec2 dz = z - uOrbitCenter;
-      dist = min(dist, abs(dz.x));
+      dist = min(dist, abs(uTrapDistance - abs(dz.x)));
     }
     if (dist > 1.0) {
       return 1.0;
@@ -350,7 +351,7 @@ const fragmentShader = `
       vec2 zz = c_mul(z, z);
       z = c_mul(zz, zz) + c;
       vec2 dz = z - uOrbitCenter;
-      dist = min(dist, max(abs(dz.x), abs(dz.y)));
+      dist = min(dist, abs(uTrapDistance - max(abs(dz.x), abs(dz.y))));
     }
     if (dist > 1.0) {
       return 1.0;
@@ -399,7 +400,7 @@ const fragmentShader = `
     for (float j = 0.; j < N; j++) {
       z = c_mul(z, c_sin(z)) + c;
       vec2 dz = z - uOrbitCenter;
-      dist = min(dist, dot(dz, dz));
+      dist = min(dist, abs(uTrapDistance - dot(dz, dz)));
     }
     if (dist > 1.0) {
       return 1.0;
@@ -423,7 +424,7 @@ const fragmentShader = `
     for (float j = 0.; j < N; j++) {
       z = c_mul(z, c_sin(z)) + c;
       vec2 dz = z - uOrbitCenter;
-      dist = min(dist, abs(dz.x));
+      dist = min(dist, abs(uTrapDistance - abs(dz.x)));
     }
     if (dist > 1.0) {
       return 1.0;
@@ -447,7 +448,7 @@ const fragmentShader = `
     for (float j = 0.; j < N; j++) {
       z = c_mul(z, c_sin(z)) + c;
       vec2 dz = z - uOrbitCenter;
-      dist = min(dist, max(abs(dz.x), abs(dz.y)));
+      dist = min(dist, abs(uTrapDistance - max(abs(dz.x), abs(dz.y))));
     }
     if (dist > 1.0) {
       return 1.0;
